@@ -1,0 +1,6 @@
+{
+    "port": "9000",
+    "databaseURL": "user:password(localhost:3306)/database",
+    "ddl-auto":"create",
+    "_comment": "ddl-auto (create, update)"
+}
