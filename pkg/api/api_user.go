@@ -26,3 +26,17 @@ func getDataUser(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteHeader(200)
 	w.WriteJson(data)
 }
+
+func userUpdateProfile(w rest.ResponseWriter, r *rest.Request) {
+	_, err := service.CheckToken(r)
+	if err != nil {
+		resp := map[string]string{}
+		resp["message"] = "JWT_invalid"
+		w.WriteHeader(400)
+		w.WriteJson(resp)
+		return
+	}
+	res, status := service.UserUpdate(r)
+	w.WriteHeader(status)
+	w.WriteJson(res)
+}

@@ -2,6 +2,9 @@ package service
 
 import (
 	"ftms-go/pkg/repository"
+	"io"
+	"mime/multipart"
+	"os"
 	"reflect"
 )
 
@@ -26,4 +29,20 @@ func InterfaceSlice(slice interface{}) []interface{} {
 	}
 
 	return ret
+}
+
+func uploadImage(file multipart.File, fName *multipart.FileHeader, empid string) (string, error) {
+	mkdirPath := "./images-profile/" + empid
+	os.MkdirAll(mkdirPath, os.ModePerm)
+	pathName := empid + "/" + fName.Filename
+	drFile, err := os.OpenFile("./images-profile/"+pathName, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		return "", err
+	}
+	_, err = io.Copy(drFile, file)
+	if err != nil {
+		return "", err
+	}
+	defer drFile.Close()
+	return pathName, nil
 }

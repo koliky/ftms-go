@@ -48,7 +48,7 @@ func CreateUser(appUser entity.AppUser) (id int, err error) {
 	if err != nil {
 		return 0, err
 	}
-	lastId, _ := resAppUser.LastInsertId()
+	lastID, _ := resAppUser.LastInsertId()
 	sqlQuery = `
 	INSERT INTO APP_ROLE (
 		CREATE_DATE,ROLE_NAME,FK_APP_USER_ID
@@ -62,14 +62,45 @@ func CreateUser(appUser entity.AppUser) (id int, err error) {
 			sqlQuery,
 			now,
 			role,
-			int(lastId),
+			int(lastID),
 		)
 		if err != nil {
 			return 0, err
 		}
 	}
 
-	return int(lastId), nil
+	return int(lastID), nil
+}
+
+func UpdateUser(appUser entity.AppUser) (id int, err error) {
+	db := getConnection()
+	defer db.Close()
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(appUser.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return 0, err
+	}
+	sqlQuery := `UPDATE APP_USER
+		SET ADDRESS = ?, FIRST_NAME = ?, LAST_NAME =?, PASSWORD = ?, IMAGE_PROFILE = ?,
+		EMAIL = ?, PHONE_NUMBER = ?, STATUS = ?
+		WHERE EMPLOYEE_ID = ?
+	`
+	resAppUser, err := db.Exec(
+		sqlQuery,
+		appUser.Address,
+		appUser.FirstName,
+		appUser.LastName,
+		hashedPassword,
+		appUser.ImageProfile,
+		appUser.Email,
+		appUser.PhoneNumber,
+		appUser.Status,
+		appUser.EmployeeID,
+	)
+	if err != nil {
+		return 0, err
+	}
+	resID, _ := resAppUser.LastInsertId()
+	return int(resID), nil
 }
 
 func CreateUserAdmin() error {
@@ -95,7 +126,7 @@ func CreateUserAdmin() error {
 	resAppUser, err := db.Exec(
 		sqlQuery,
 		"foamtec address",
-		"ADMIN_CREATE",
+		"CHEANG",
 		now,
 		"MIS",
 		"apichate@foamtecintl.com",
@@ -113,7 +144,7 @@ func CreateUserAdmin() error {
 	if err != nil {
 		return err
 	}
-	lastId, _ := resAppUser.LastInsertId()
+	lastID, _ := resAppUser.LastInsertId()
 	sqlQuery = `
 	INSERT INTO APP_ROLE (
 		CREATE_DATE,ROLE_NAME,FK_APP_USER_ID
@@ -125,7 +156,7 @@ func CreateUserAdmin() error {
 		sqlQuery,
 		now,
 		"Admin",
-		int(lastId),
+		int(lastID),
 	)
 	if err != nil {
 		return err

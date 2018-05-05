@@ -14,6 +14,7 @@ func NewRouter() rest.App {
 
 		rest.Get("/api/user/imageprofile/:username", imageProfile),
 		rest.Post("/api/user/getdatauser", getDataUser),
+		rest.Post("/api/user/updateprofile", userUpdateProfile),
 
 		rest.Post("/api/admin/validateempid", adminValidateEmpId),
 		rest.Post("/api/admin/createuser", adminCreateUser),

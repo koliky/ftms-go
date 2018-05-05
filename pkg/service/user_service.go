@@ -4,6 +4,8 @@ import (
 	"ftms-go/pkg/entity"
 	"ftms-go/pkg/repository"
 	"strconv"
+
+	"github.com/ant0ine/go-json-rest/rest"
 )
 
 func CreateUserAdmin() (map[string]string, int) {
@@ -83,5 +85,46 @@ func AdminCreateUser(data map[string]interface{}) (map[string]interface{}, int) 
 		return resp, 400
 	}
 	resp["id"] = id
+	return resp, 200
+}
+
+func UserUpdate(r *rest.Request) (map[string]interface{}, int) {
+	resp := map[string]interface{}{}
+	appUser := entity.AppUser{}
+	appUser.EmployeeID = r.FormValue("employeeId")
+	appUser.FirstName = r.FormValue("firstName")
+	appUser.LastName = r.FormValue("lastName")
+	appUser.Password = r.FormValue("password")
+	appUser.Email = r.FormValue("email")
+	appUser.Address = r.FormValue("address")
+	appUser.PhoneNumber = r.FormValue("phone")
+	appUser.Status = "UPDATE"
+
+	file, typeHeader, err := r.FormFile("fileImage")
+	if file != nil {
+		pathName, err := uploadImage(file, typeHeader, appUser.EmployeeID)
+		if err != nil {
+			resp["message"] = "file error"
+			return resp, 400
+		}
+		appUser.ImageProfile = pathName
+	}
+	if err != nil {
+		resp["message"] = "file error"
+		return resp, 400
+	}
+
+	if err != nil {
+		resp["message"] = err.Error()
+		return resp, 400
+	}
+
+	_, err = repository.UpdateUser(appUser)
+	if err != nil {
+		resp["message"] = err.Error()
+		return resp, 400
+	}
+	defer file.Close()
+	resp["message"] = "success"
 	return resp, 200
 }
