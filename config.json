@@ -1,6 +1,6 @@
 {
     "port": "9000",
-    "databaseURL": "foamtec:Fa,gm8@tcp(localhost:3306)/foamtec",
+    "databaseURL": "foamtec:password@tcp(localhost:3306)/foamtec",
     "ddl-auto":"create",
     "_comment": "ddl-auto (create, update)"
 }
